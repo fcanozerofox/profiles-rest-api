@@ -2,3 +2,4 @@
  docker-compose run web python manage.py startapp profiles_api
  docker-compose run web python manage.py makemigrations profiles_api
  docker-compose run web python manage.py migrate
+ docker-compose run web python manage.py createsuperuser
