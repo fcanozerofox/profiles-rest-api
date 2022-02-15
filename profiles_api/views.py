@@ -3,8 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from profiles_api import serializers
+from profiles_api import models
+from profiles_api import permissions
 
 
 class HelloApiView(APIView):
@@ -49,6 +52,7 @@ class HelloApiView(APIView):
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API ViewSet"""
+
     serializer_class = serializers.HelloSerializer
 
     def list(self, request):
@@ -67,9 +71,9 @@ class HelloViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            name = serializer.validated_data.get('name')
-            message = f'Hello {name}!'
-            return Response({'message': message})
+            name = serializer.validated_data.get("name")
+            message = f"Hello {name}!"
+            return Response({"message": message})
         else:
             return Response(
                 serializer.errors,
@@ -78,16 +82,25 @@ class HelloViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         """Handle getting an object by its ID"""
-        return Response({'http_method': 'GET'})
+        return Response({"http_method": "GET"})
 
     def update(self, request, pk=None):
         """Handle updating an object"""
-        return Response({'http_method': 'PUT'})
+        return Response({"http_method": "PUT"})
 
     def partial_update(self, request, pk=None):
         """Handle partial update of an object"""
-        return Response({'http_method': 'PATCH'})
+        return Response({"http_method": "PATCH"})
 
     def destroy(self, request, pk=None):
         """Handle removing an an object"""
-        return Response({'http_method': 'DELETE'})
+        return Response({"http_method": "DELETE"})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating an updating profiles"""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
